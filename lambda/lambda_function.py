@@ -257,8 +257,6 @@ def enterPlayerTournament(session):
 
 
 # --------------- Functions that control the skill's behavior -------------
-
-# --------------- Functions that control the skill's behavior -------------
 def boxing_intro(session):
     """If we wanted to initialize the session to have some attributes we could add those here."""
     intro = ( CONST_INTRO_1 )
@@ -345,7 +343,6 @@ def handle_startsessionintent_request(intent, session):
         speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
-	
 def handle_choosetrainerintent_request(intent, session):
     trainer_name = str(intent["slots"]["TrainerName"]["value"])
     session["attributes"]["CONST_TRAINER"] = trainer_name
@@ -412,7 +409,6 @@ def handle_basicsintent_request(intent, session):
         speech_output=(CONST_Salli_Voice + CONST_Basics + score_update + CONST_Basics2 + CONST_Voice_End)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
-	
 def handle_shadowboxingintent_request(intent, session):
     should_end_session = False
     user_gave_up = intent['name']
@@ -450,7 +446,6 @@ def handle_shadowboxingintent_request(intent, session):
     else:
         speech_output = (CONST_Salli_Voice + CONST_Shadow_Boxing + response_output + CONST_Shadow_Boxing_End + score_update + CONST_Shadow_Boxing_End2 + CONST_Voice_End)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
-
 
 def handle_repeatshadowboxingintent_request(intent, session):
     should_end_session = False
@@ -490,7 +485,6 @@ def handle_repeatshadowboxingintent_request(intent, session):
         speech_output = (CONST_Salli_Voice + CONST_Shadow_Boxing_OLD + response_output + CONST_Shadow_Boxing_OLD_End + score_update + CONST_Shadow_Boxing_OLD_End2 + CONST_Voice_End)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
-
 def handle_get_help_request(intent, session):
     attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
                   "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
@@ -515,7 +509,6 @@ def handle_get_help_request(intent, session):
         attributes,
         build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
     )
-
 def handle_endsessionintent_request(intent, session):
     attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
     should_end_session = True
@@ -537,6 +530,7 @@ def handle_finish_session_request(intent, session):
         attributes,
         build_speechlet_response_without_card(speech_output, reprompt_text, should_end_session)
     )
+
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
