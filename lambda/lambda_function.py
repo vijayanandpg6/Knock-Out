@@ -1,169 +1,127 @@
-# -*- coding: utf-8 -*-
+"""boxing Skill.
 
-# This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
-# Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
-# session persistence, api calls, and more.
-# This sample is built using the handler classes approach in skill builder.
-import logging
-import ask_sdk_core.utils as ask_utils
+This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
 
-from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.handler_input import HandlerInput
+"""
+import requests
+import boto3
+import json
+import time
+import random
+import hashlib
 
-from ask_sdk_model import Response
+# ------- Skill specific business logic -------
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+def on_intent(intent_request, session):
+    """Called when the user specifies an intent for this skill."""
+    print("on_intent requestId=" + intent_request['requestId'] +
+          ", sessionId=" + session['sessionId'])
 
+    intent = intent_request['intent']
+    intent_name = intent_request['intent']['name'
 
-class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
+# --------------- Functions that make Gameon API calls -------------
 
-        return ask_utils.is_request_type("LaunchRequest")(handler_input)
+def handle_finish_session_request(intent, session):
+    """End the session with a message if the user wants to quit the app."""
+    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
+    reprompt_text = CONS_END_SESSION
+    should_end_session = True
+    speech_output = (CONS_END_SESSION)
+    return build_response(
+        attributes,
+        build_speechlet_response_without_card(speech_output, reprompt_text, should_end_session)
+    )
 
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = "Welcome, you can say Hello or Help. Which would you like to try?"
+#---------------- Lambda functions ----------------------------------------
 
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                .ask(speak_output)
-                .response
-        )
-
-
-class HelloWorldIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = "Hello World!"
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
-                .response
-        )
-
-
-class HelpIntentHandler(AbstractRequestHandler):
-    """Handler for Help Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = "You can say hello to me! How can I help?"
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                .ask(speak_output)
-                .response
-        )
-
-
-class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = "Goodbye!"
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                .response
-        )
-
-
-class SessionEndedRequestHandler(AbstractRequestHandler):
-    """Handler for Session End."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-
-        # Any cleanup logic goes here.
-
-        return handler_input.response_builder.response
-
-
-class IntentReflectorHandler(AbstractRequestHandler):
-    """The intent reflector is used for interaction model testing and debugging.
-    It will simply repeat the intent the user said. You can create custom handlers
-    for your intents by defining them above, then also adding them to the request
-    handler chain below.
+def lambda_handler(event, context):
     """
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_request_type("IntentRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        intent_name = ask_utils.get_intent_name(handler_input)
-        speak_output = "You just triggered " + intent_name + "."
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
-                .response
-        )
-
-
-class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Generic error handling to capture any syntax or routing errors. If you receive an error
-    stating the request handler chain is not found, you have not implemented a handler for
-    the intent being invoked or included it in the skill builder below.
+    Route the incoming request based on type (LaunchRequest, IntentRequest, etc).
+    The JSON body of the request is provided in the event parameter.
     """
-    def can_handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> bool
-        return True
+    print("event.session.application.applicationId=" +
+          event['session']['application']['applicationId'])
+    print("event:" + json.dumps(event))
 
-    def handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> Response
-        logger.error(exception, exc_info=True)
+    if event['session']['new']:
+        on_session_started({'requestId': event['request']['requestId']},
+                           event['session'])
 
-        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                .ask(speak_output)
-                .response
-        )
-
-# The SkillBuilder object acts as the entry point for your skill, routing all request and response
-# payloads to the handlers above. Make sure any new handlers or interceptors you've
-# defined are included below. The order matters - they're processed top to bottom.
+    if event['request']['type'] == "LaunchRequest":
+        return on_launch(event['request'], event['session'])
+    elif event['request']['type'] == "IntentRequest":
+        return on_intent(event['request'], event['session'])
+    elif event['request']['type'] == "SessionEndedRequest":
+        return on_session_ended(event['request'], event['session'])
 
 
-sb = SkillBuilder()
+def on_session_started(session_started_request, session):
+    """Called when the session starts."""
+    print("on_session_started requestId=" +
+          session_started_request['requestId'] + ", sessionId=" +
+          session['sessionId'])
 
-sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(HelloWorldIntentHandler())
-sb.add_request_handler(HelpIntentHandler())
-sb.add_request_handler(CancelOrStopIntentHandler())
-sb.add_request_handler(SessionEndedRequestHandler())
-sb.add_request_handler(IntentReflectorHandler()) # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
 
-sb.add_exception_handler(CatchAllExceptionHandler())
+def on_launch(launch_request, session):
+    """Called when the user launches the skill without specifying what they want."""
+    print("on_launch requestId=" + launch_request['requestId'] +
+          ", sessionId=" + session['sessionId'])
+    # Dispatch to your skill's launch
+    return boxing_intro(session)
 
-lambda_handler = sb.lambda_handler()
+def on_session_ended(session_ended_request, session):
+    """
+    Called when the user ends the session.
+    Is not called when the skill returns should_end_session=true
+    """
+    print("on_session_ended requestId=" + session_ended_request['requestId'] +
+          ", sessionId=" + session['sessionId'])
+    # add cleanup logic here
+# --------------- Helpers that build all of the responses -----------------
+
+def build_speechlet_response(title, output, reprompt_text, should_end_session):
+    return {
+        'outputSpeech': {
+            'type': 'SSML',
+            'ssml': '<speak>' + output + '</speak>'
+        },
+        'card': {
+            'type': 'Simple',
+            'title': title,
+            'content': 'Knock Out'
+        },
+        'reprompt': {
+            'outputSpeech': {
+                'type': 'SSML',
+                'ssml': '<speak>' + reprompt_text + '</speak>'
+            }
+        },
+        'shouldEndSession': should_end_session
+    }
+
+
+def build_speechlet_response_without_card(output, reprompt_text, should_end_session):
+    return {
+        'outputSpeech': {
+            'type': 'SSML',
+            'text': output
+        },
+        'reprompt': {
+            'outputSpeech': {
+                'type': 'SSML',
+                'text': reprompt_text
+            }
+        },
+        'shouldEndSession': should_end_session
+    }
+
+
+def build_response(attributes, speechlet_response):
+    return {
+        'version': '1.0',
+        'sessionAttributes': attributes,
+        'response': speechlet_response
+    }
+
+
