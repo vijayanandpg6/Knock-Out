@@ -1,0 +1,114 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "knock out",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "HelloWorldIntent",
+          "slots": [],
+          "samples": [
+            "hello",
+            "how are you",
+            "say hi world",
+            "say hi",
+            "hi",
+            "say hello world",
+            "say hello"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "BasicsIntent",
+          "slots": [],
+          "samples": [
+            "start with the basics mode",
+            "basics mode",
+            "i want to start with the basics",
+            "let us start with the basics",
+            "basics",
+            "start with the basics",
+            "the basics"
+          ]
+        },
+        {
+          "name": "ShadowBoxingIntent",
+          "slots": [],
+          "samples": [
+            "continue training",
+            "yes continue with training",
+            "yes continue training",
+            "let us start with shadow boxing mode",
+            "let us start with shadow boxing",
+            "start with shadow boxing mode",
+            "start with shadow boxing",
+            "shadow boxing mode",
+            "shadow boxing"
+          ]
+        },
+        {
+          "name": "ChooseTrainerIntent",
+          "slots": [
+            {
+              "name": "TrainerName",
+              "type": "TrainerName"
+            }
+          ],
+          "samples": [
+            "i want to choose {TrainerName}",
+            "choose {TrainerName}",
+            "trainer {TrainerName}",
+            "{TrainerName}"
+          ]
+        },
+        {
+          "name": "StartSessionIntent",
+          "slots": [],
+          "samples": [
+            "begin",
+            "start",
+            "let us start the session",
+            "let us begin the session",
+            "begin session",
+            "let us begin",
+            "start the session"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "id": "Laila",
+              "name": {
+                "value": "Laila"
+              }
+            },
+            {
+              "id": "Mike",
+              "name": {
+                "value": "Mike"
+              }
+            }
+          ],
+          "name": "TrainerName"
+        }
+      ]
+    }
+  },
+  "version": "2"
+}
