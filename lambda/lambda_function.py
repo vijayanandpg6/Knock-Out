@@ -22,6 +22,20 @@ def on_intent(intent_request, session):
 
 # --------------- Functions that make Gameon API calls -------------
 
+def registerPlayer(session):
+     headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+    r = requests.post(url = CONST_URL+"players/register", data = data,headers=headers) 
+    responseData = r.json()
+    return "Player already registered"
+
+def authenticatePlayer(session):
+    data ={}
+    json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+    r = requests.post(url = CONST_URL+"/players/auth", data = data,json = json,headers = headers) 
+    responseData = r.json()
+    return session["attributes"]["CONST_SESSION_ID"]
+
 def handle_finish_session_request(intent, session):
     """End the session with a message if the user wants to quit the app."""
     attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
