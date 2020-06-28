@@ -36,6 +36,22 @@ def authenticatePlayer(session):
     responseData = r.json()
     return session["attributes"]["CONST_SESSION_ID"]
 
+def leaderboardRank(playerName, session):
+    data ={}
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+        return "Invalid playerName"
+
+def isNewPlayer(playerName, session):
+    data ={}
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+        responseData = r.json()
+        leaderboardJson = responseData['leaderboard']
+        return "new"
+
 def handle_finish_session_request(intent, session):
     """End the session with a message if the user wants to quit the app."""
     attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
