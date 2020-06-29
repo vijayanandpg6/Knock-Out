@@ -23,9 +23,12 @@ def on_intent(intent_request, session):
 # --------------- Functions that make Gameon API calls -------------
 
 def registerPlayer(session):
-     headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
     r = requests.post(url = CONST_URL+"players/register", data = data,headers=headers) 
     responseData = r.json()
+    session["attributes"]["CONST_PLAYER_TOKEN"] =  responseData['playerToken']
+    session["attributes"]["CONST_EXTERNAL_PLAYER_ID"] = responseData['externalPlayerId']
+    return session["attributes"]["CONST_EXTERNAL_PLAYER_ID"]
     return "Player already registered"
 
 def authenticatePlayer(session):
@@ -34,6 +37,8 @@ def authenticatePlayer(session):
     headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
     r = requests.post(url = CONST_URL+"/players/auth", data = data,json = json,headers = headers) 
     responseData = r.json()
+    session["attributes"]["CONST_SESSION_ID"] =  responseData['sessionId']
+    session["attributes"]["CONST_SESSION_EXPIRATION_DATE"] = responseData['sessionExpirationDate']
     return session["attributes"]["CONST_SESSION_ID"]
 
 def leaderboardRank(playerName, session):
@@ -51,6 +56,17 @@ def isNewPlayer(playerName, session):
         responseData = r.json()
         leaderboardJson = responseData['leaderboard']
         return "new"
+
+def handle_endsessionintent_request(intent, session):
+    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
+    should_end_session = True
+    user_gave_up = intent['name']
+    reprompt_text = CONS_END_SESSION
+    speech_output = (CONS_END_SESSION)
+    return build_response(
+        attributes,
+        build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
+    )
 
 def handle_finish_session_request(intent, session):
     """End the session with a message if the user wants to quit the app."""
