@@ -43,30 +43,28 @@ def authenticatePlayer(session):
 
 def leaderboardRank(playerName, session):
     data ={}
-    try:
-        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
-        return "Invalid playerName"
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+    r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+    responseData = r.json()
+    leaderboardJson = responseData['leaderboard']
+	return "Invalid playerName"
 
 def isNewPlayer(playerName, session):
     data ={}
-    try:
-        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
-        responseData = r.json()
-        leaderboardJson = responseData['leaderboard']
-        return "new"
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+    r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+    responseData = r.json()
+    leaderboardJson = responseData['leaderboard']
+	return "new"
 
 def handle_endsessionintent_request(intent, session):
-    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
-    should_end_session = True
-    user_gave_up = intent['name']
-    reprompt_text = CONS_END_SESSION
-    speech_output = (CONS_END_SESSION)
-    return build_response(
-        attributes,
-        build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
-    )
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+    json ={	"score" : session["attributes"]["CONST_SCORE"]}
+    r = requests.put(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/score", data = data,json = json,headers = headers)
+    responseData = r.json()
+    session["attributes"]["CONST_SCORE"] = responseData['score']
+    #session["attributes"]["CONST_MESSAGE"] = responseData['message']
+    return str(session["attributes"]["CONST_SCORE"])
 
 def handle_finish_session_request(intent, session):
     """End the session with a message if the user wants to quit the app."""
@@ -79,6 +77,13 @@ def handle_finish_session_request(intent, session):
         build_speechlet_response_without_card(speech_output, reprompt_text, should_end_session)
     )
 
+	
+def enterMatch(session):
+	headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+    r = requests.post(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/enter", data = data,headers = headers) 
+    responseData = r.json()
+	return session["attributes"]["CONST_TOURNAMENTID"]
+    
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
