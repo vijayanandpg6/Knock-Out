@@ -79,11 +79,23 @@ def handle_finish_session_request(intent, session):
 
 	
 def enterMatch(session):
+	data ={}
 	headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
     r = requests.post(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/enter", data = data,headers = headers) 
     responseData = r.json()
+	#MATCH_ID = responseData['matchId']
+    #attemptsRemaining =  responseData['attemptsRemaining']
+    #session["attributes"]["CONST_TOURNAMENTID"] = responseData['tournamentId']
 	return session["attributes"]["CONST_TOURNAMENTID"]
+    data ={}
     
+def enterPlayerTournament(session):
+    data ={}
+	#json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+    r = requests.post(url = CONST_URL+"player-tournaments/"+session["attributes"]["CONST_TOURNAMENTID"]+"/enter", data = data, headers = headers) 
+    responseData = r.json()
+	return session["attributes"]["CONST_TOURNAMENTID"]
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
