@@ -96,6 +96,30 @@ def enterPlayerTournament(session):
     r = requests.post(url = CONST_URL+"player-tournaments/"+session["attributes"]["CONST_TOURNAMENTID"]+"/enter", data = data, headers = headers) 
     responseData = r.json()
 	return session["attributes"]["CONST_TOURNAMENTID"]
+
+
+# --------------- Functions that control the skill's behavior -------------
+def boxing_intro(session):
+    """If we wanted to initialize the session to have some attributes we could add those here."""
+    intro = ( CONST_INTRO_1 )
+    main_user_id = str(session['user']['userId'])
+    hash_obj = hashlib.sha1( bytes(main_user_id, 'utf-8'))
+    #user_id = str(main_user_id[19:39] + main_user_id[65:85] + main_user_id[200:])
+    #user_id = str(main_user_id[200:])
+
+    return build_response(attributes, build_speechlet_response(
+        CONST_Skill_name, speech_output, reprompt_text, should_end_session))
+
+
+def handle_startsessionintent_request(intent, session):
+    main_user_id = str(session['user']['userId'])
+    user_id = session["attributes"]["CONST_PLAYER_NAME"]
+    playerId = "not new"
+    playerId = isNewPlayer(user_id, session)
+    
+    #session["attributes"]["CONST_PLAYER_NAME"] = user_id
+    #session["attributes"]["CONST_IS_NEW"] = "false"
+    return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
