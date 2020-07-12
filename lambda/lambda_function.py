@@ -119,6 +119,21 @@ def handle_startsessionintent_request(intent, session):
     
     #session["attributes"]["CONST_PLAYER_NAME"] = user_id
     #session["attributes"]["CONST_IS_NEW"] = "false"
+    if(playerId == "new"):
+        registerPlayer(session)
+        authenticatePlayer(session)
+        enterPlayerTournament(session)
+        #enterMatch(session)
+        #session["attributes"]["CONST_SCORE"] = int(session["attributes"]["CONST_SCORE"])
+        increaseScore(session)
+        session["attributes"]["CONST_IS_NEW"] = "true"
+    else:
+        authenticatePlayer(session)
+        enterPlayerTournament(session)
+        enterMatch(session)
+        increaseScore(session)
+        session["attributes"]["CONST_IS_NEW"] = "false"
+
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 #---------------- Lambda functions ----------------------------------------
 
