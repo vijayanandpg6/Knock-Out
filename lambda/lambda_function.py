@@ -134,6 +134,14 @@ def handle_startsessionintent_request(intent, session):
         increaseScore(session)
         session["attributes"]["CONST_IS_NEW"] = "false"
 
+    is_new = str(session["attributes"]["CONST_IS_NEW"])
+    attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
+                  "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
+                  "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
+                  "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
+                  "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"]
+                  }
+    
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 #---------------- Lambda functions ----------------------------------------
 
