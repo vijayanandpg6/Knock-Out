@@ -159,6 +159,24 @@ def handle_startsessionintent_request(intent, session):
     score_update = "You have " + str(session["attributes"]["CONST_SCORE"]) + " points from your previous sessions and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
     speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
+
+
+def handle_choosetrainerintent_request(intent, session):
+    trainer_name = str(intent["slots"]["TrainerName"]["value"])
+    session["attributes"]["CONST_TRAINER"] = trainer_name
+    attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
+                  "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
+                  "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
+                  "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
+                  "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
+                  }
+    should_end_session = False
+    user_gave_up = intent['name']
+    reprompt_text =  "Which trainer would you like to choose. Trainer Mike, or Trainer Laila? "
+    is_new = str(session["attributes"]["CONST_IS_NEW"])
+    
+    return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
+
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
