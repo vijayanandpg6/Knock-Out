@@ -155,9 +155,12 @@ def handle_startsessionintent_request(intent, session):
     user_gave_up = intent['name']
     reprompt_text = "Tell me to start the session when you are ready. "
     speech_output=(CONST_Trainers)
-	leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
-    score_update = "You have " + str(session["attributes"]["CONST_SCORE"]) + " points from your previous sessions and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
-    speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
+	if(is_new == "true"):
+        speech_output=(CONST_Trainers)
+    else:
+        leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
+        score_update = "You have " + str(session["attributes"]["CONST_SCORE"]) + " points from your previous sessions and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
+        speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
 
@@ -169,6 +172,16 @@ def handle_choosetrainerintent_request(intent, session):
                   "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
                   "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
                   "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
+                  "CONST_SESSION_EXPIRATION_DATE": session["attributes"]["CONST_SESSION_EXPIRATION_DATE"],
+                  "CONST_SCORE": session["attributes"]["CONST_SCORE"],
+                  "CONST_PLAYER_SCORE": session["attributes"]["CONST_PLAYER_SCORE"],
+                  "CONST_RANK": session["attributes"]["CONST_RANK"],
+                  "CONST_PLAYER_NAME": session["attributes"]["CONST_PLAYER_NAME"],
+                  "CONST_MESSAGE": session["attributes"]["CONST_MESSAGE"],
+                  "CONST_TRAINER": session["attributes"]["CONST_TRAINER"],
+                  "CONST_IS_NEW": session["attributes"]["CONST_IS_NEW"],
+                  "CONST_TOURNAMENTID": session["attributes"]["CONST_TOURNAMENTID"],
+                  "LOG_ERRORS": session["attributes"]["LOG_ERRORS"]
                   }
     should_end_session = False
     user_gave_up = intent['name']
