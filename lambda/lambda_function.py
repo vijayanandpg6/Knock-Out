@@ -119,20 +119,15 @@ def handle_startsessionintent_request(intent, session):
     
     #session["attributes"]["CONST_PLAYER_NAME"] = user_id
     #session["attributes"]["CONST_IS_NEW"] = "false"
-    if(playerId == "new"):
-        registerPlayer(session)
-        authenticatePlayer(session)
-        enterPlayerTournament(session)
-        #enterMatch(session)
-        #session["attributes"]["CONST_SCORE"] = int(session["attributes"]["CONST_SCORE"])
-        increaseScore(session)
-        session["attributes"]["CONST_IS_NEW"] = "true"
-    else:
-        authenticatePlayer(session)
-        enterPlayerTournament(session)
-        enterMatch(session)
-        increaseScore(session)
-        session["attributes"]["CONST_IS_NEW"] = "false"
+    
+    registerPlayer(session)
+    authenticatePlayer(session)
+    enterPlayerTournament(session)
+    #enterMatch(session)
+    #session["attributes"]["CONST_SCORE"] = int(session["attributes"]["CONST_SCORE"])
+    increaseScore(session)
+    session["attributes"]["CONST_IS_NEW"] = "true"
+
 
     is_new = str(session["attributes"]["CONST_IS_NEW"])
     attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
@@ -155,12 +150,6 @@ def handle_startsessionintent_request(intent, session):
     user_gave_up = intent['name']
     reprompt_text = "Tell me to start the session when you are ready. "
     speech_output=(CONST_Trainers)
-	if(is_new == "true"):
-        speech_output=(CONST_Trainers)
-    else:
-        leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
-        score_update = "You have " + str(session["attributes"]["CONST_SCORE"]) + " points from your previous sessions and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
-        speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
 
@@ -211,6 +200,44 @@ def handle_basicsintent_request(intent, session):
     
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
+	
+def handle_shadowboxingintent_request(intent, session):
+    should_end_session = False
+    user_gave_up = intent['name']
+    reprompt_text = "Yet to be implemented" 
+    response_output = ""
+    for i in range(0,10):
+        random_number1 = random.randint(0,3)
+        random_number2 = random.randint(0,3)
+        random_number3 = random.randint(0,3)
+        random_number4 = random.randint(0,3)
+        response_output = (response_output + Combinations[random_number1] + Combinations[random_number2] + Combinations[random_number3] + Combinations[random_number4])
+    session["attributes"]["CONST_SCORE"] = (int(session["attributes"]["CONST_SCORE"]) + 10)
+    increaseScore(session)
+    leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
+    attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
+                  "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
+                  "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
+                  "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
+                  "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
+                  "CONST_SESSION_EXPIRATION_DATE": session["attributes"]["CONST_SESSION_EXPIRATION_DATE"],
+                  "CONST_SCORE": session["attributes"]["CONST_SCORE"],
+                  "CONST_PLAYER_SCORE": session["attributes"]["CONST_PLAYER_SCORE"],
+                  "CONST_RANK": session["attributes"]["CONST_RANK"],
+                  "CONST_PLAYER_NAME": session["attributes"]["CONST_PLAYER_NAME"],
+                  "CONST_MESSAGE": session["attributes"]["CONST_MESSAGE"],
+                  "CONST_TRAINER": session["attributes"]["CONST_TRAINER"],
+                  "CONST_IS_NEW": session["attributes"]["CONST_IS_NEW"],
+                  "CONST_TOURNAMENTID": session["attributes"]["CONST_TOURNAMENTID"],
+                  "LOG_ERRORS": session["attributes"]["LOG_ERRORS"]
+                  }
+    score_update = "Your total points are " + str(session["attributes"]["CONST_SCORE"]) + ", and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
+    trainer_name = str(session["attributes"]["CONST_TRAINER"])
+    if(trainer_name.lower() == "mike"):
+        speech_output = (CONST_Matthew_Voice + CONST_Shadow_Boxing + response_output + CONST_Shadow_Boxing_End + score_update + CONST_Shadow_Boxing_End2 + CONST_Voice_End)
+    else:
+        speech_output = (CONST_Salli_Voice + CONST_Shadow_Boxing + response_output + CONST_Shadow_Boxing_End + score_update + CONST_Shadow_Boxing_End2 + CONST_Voice_End)
+    return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
