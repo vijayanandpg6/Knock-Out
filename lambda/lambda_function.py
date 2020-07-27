@@ -187,6 +187,27 @@ def handle_choosetrainerintent_request(intent, session):
     user_gave_up = intent['name']
     reprompt_text =  "Which trainer would you like to choose. Trainer Mike, or Trainer Laila? "
     is_new = str(session["attributes"]["CONST_IS_NEW"])
+    if(is_new =="true"):
+        if(trainer_name.lower() == "mike"):
+            speech_output=(CONST_Matthew_Voice + CONST_Choose_Trainer_99 + trainer_name + ". " + CONST_Choose_Trainer + CONST_Voice_End)
+        else:
+            speech_output=(CONST_Salli_Voice + CONST_Choose_Trainer_99 + trainer_name + ". " + CONST_Choose_Trainer + CONST_Voice_End)
+    return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
+
+	
+def handle_basicsintent_request(intent, session):
+    attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
+                  "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
+                  "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
+                  "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
+                  "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
+                  "CONST_SESSION_EXPIRATION_DATE": session["attributes"]["CONST_SESSION_EXPIRATION_DATE"],
+                  
+                  }
+    should_end_session = False
+    user_gave_up = intent['name']
+    reprompt_text = "you have completed your basic training. "
+    session["attributes"]["CONST_SCORE"] = (int(session["attributes"]["CONST_SCORE"]) + 5)
     
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
