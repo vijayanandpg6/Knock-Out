@@ -10,6 +10,26 @@ import time
 import random
 import hashlib
 
+CONST_Skill_name = "knock out"
+
+# Constants
+CONST_Trainer_Name = "Mike"
+Combinations = ["Jab. ", "Cross. ", "Hook. ", "Upper Cut. "]
+CONST_URL = "https://api.amazongameon.com/v1/"
+
+
+# Alexa dialogues
+# 1. Introduction
+CONST_INTRO_1 = CONST_Beeps + "Welcome to " + CONST_Skill_name + ". " + "Boxing, is an unarmed combat sport, and has it's history as early as 1500 BC. "
+CONST_INTRO_1 += "If you are an existing user, you can continue from your last saved progress once you start the session. "
+CONST_INTRO_1 += "Boxing is not only a hobby that you can learn, but also a tiring sport, a fitness regimen, and also a highly successful form of self defence. "
+#CONST_INTRO_1 += "It helps you to learn discipline, self control, and gain enormous self confidence with regular practice. "
+# CONST_INTRO_1 += "If you are an existing user, you can continue from your last saved progress once you start the session for today. "
+CONST_INTRO_1 += "To customize your experience, we have 2 trainers, Mike, and Laila, whom you can choose to train with. "
+CONST_INTRO_1 += "Along your way, you will be awarded with points, and you can compete with others, who are training just like you. "
+CONST_INTRO_1 += "Tell me to start the session when you are ready. "
+
+
 # ------- Skill specific business logic -------
 
 def on_intent(intent_request, session):
@@ -250,6 +270,12 @@ def handle_repeatshadowboxingintent_request(intent, session):
     user_gave_up = intent['name']
     reprompt_text = "Yet to be implemented" 
     response_output = ""
+    for i in range(0,10):
+        random_number1 = random.randint(0,3)
+        random_number2 = random.randint(0,3)
+        random_number3 = random.randint(0,3)
+        random_number4 = random.randint(0,3)
+        response_output = (response_output + Combinations[random_number1] + Combinations[random_number2] + Combinations[random_number3] + Combinations[random_number4])
     session["attributes"]["CONST_SCORE"] = (int(session["attributes"]["CONST_SCORE"]) + 10)
     increaseScore(session)
     leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
@@ -276,6 +302,17 @@ def handle_repeatshadowboxingintent_request(intent, session):
     else:
         speech_output = (CONST_Salli_Voice + CONST_Shadow_Boxing_OLD + response_output + CONST_Shadow_Boxing_OLD_End + score_update + CONST_Shadow_Boxing_OLD_End2 + CONST_Voice_End)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
+
+
+def handle_get_help_request(intent, session):
+    
+    speech_output = "Just ask {} for your titles!".format(CONST_Skill_name)
+    reprompt_text = "what can I help you with?"
+    should_end_session = False
+    return build_response(
+        attributes,
+        build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
+    )
 #---------------- Lambda functions ----------------------------------------
 
 def lambda_handler(event, context):
