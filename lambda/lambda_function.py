@@ -305,13 +305,50 @@ def handle_repeatshadowboxingintent_request(intent, session):
 
 
 def handle_get_help_request(intent, session):
-    
+    attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
+                  "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
+                  "CONST_PLAYER_TOKEN": session["attributes"]["CONST_PLAYER_TOKEN"],
+                  "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
+                  "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
+                  "CONST_SESSION_EXPIRATION_DATE": session["attributes"]["CONST_SESSION_EXPIRATION_DATE"],
+                  "CONST_SCORE": session["attributes"]["CONST_SCORE"],
+                  "CONST_PLAYER_SCORE": session["attributes"]["CONST_PLAYER_SCORE"],
+                  "CONST_RANK": session["attributes"]["CONST_RANK"],
+                  "CONST_PLAYER_NAME": session["attributes"]["CONST_PLAYER_NAME"],
+                  "CONST_MESSAGE": session["attributes"]["CONST_MESSAGE"],
+                  "CONST_TRAINER": session["attributes"]["CONST_TRAINER"],
+                  "CONST_IS_NEW": session["attributes"]["CONST_IS_NEW"],
+                  "CONST_TOURNAMENTID": session["attributes"]["CONST_TOURNAMENTID"],
+                  "LOG_ERRORS": session["attributes"]["LOG_ERRORS"]
+                  }
     speech_output = "Just ask {} for your titles!".format(CONST_Skill_name)
     reprompt_text = "what can I help you with?"
     should_end_session = False
     return build_response(
         attributes,
         build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
+    )
+
+def handle_endsessionintent_request(intent, session):
+    
+    should_end_session = True
+    user_gave_up = intent['name']
+    reprompt_text = CONS_END_SESSION
+    speech_output = (CONS_END_SESSION)
+    return build_response(
+        attributes,
+        build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session)
+    )
+
+def handle_finish_session_request(intent, session):
+    """End the session with a message if the user wants to quit the app."""
+    
+    reprompt_text = CONS_END_SESSION
+    should_end_session = True
+    speech_output = (CONS_END_SESSION)
+    return build_response(
+        attributes,
+        build_speechlet_response_without_card(speech_output, reprompt_text, should_end_session)
     )
 #---------------- Lambda functions ----------------------------------------
 
