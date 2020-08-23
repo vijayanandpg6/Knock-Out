@@ -17,6 +17,14 @@ CONST_Trainer_Name = "Mike"
 Combinations = ["Jab. ", "Cross. ", "Hook. ", "Upper Cut. "]
 CONST_URL = "https://api.amazongameon.com/v1/"
 
+# Amazon Polly Voices
+CONST_Alexa_Voice = '<voice>'
+CONST_Matthew_Voice = '<voice name="Matthew">'
+CONST_Kendra_Voice = '<voice name="Kendra">'
+CONST_Salli_Voice = '<voice name="Salli">'
+
+CONST_Voice_Start = '<voice>'
+CONST_Voice_End = '</voice>'
 
 # Alexa dialogues
 # 1. Introduction
@@ -38,7 +46,20 @@ def on_intent(intent_request, session):
           ", sessionId=" + session['sessionId'])
 
     intent = intent_request['intent']
-    intent_name = intent_request['intent']['name'
+    intent_name = intent_request['intent']['name']
+    # Dispatch to your skill's intent handlers
+    #print("***********************intent section***************************")
+    #print(intent_name)
+    if intent_name == "ChooseTrainerIntent":
+        return handle_choosetrainerintent_request(intent, session)
+    elif intent_name == "StartSessionIntent":
+        return handle_startsessionintent_request(intent, session)
+    elif intent_name == "BasicsIntent":
+        return handle_basicsintent_request(intent, session) 
+    elif intent_name == "ShadowBoxingIntent":
+        return handle_shadowboxingintent_request(intent, session)
+    elif intent_name == "RepeatShadowBoxingIntent":
+		return handle_repeatshadowboxingintent_request(intent, session)
 
 # --------------- Functions that make Gameon API calls -------------
 
@@ -330,7 +351,7 @@ def handle_get_help_request(intent, session):
     )
 
 def handle_endsessionintent_request(intent, session):
-    
+    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
     should_end_session = True
     user_gave_up = intent['name']
     reprompt_text = CONS_END_SESSION
@@ -342,7 +363,7 @@ def handle_endsessionintent_request(intent, session):
 
 def handle_finish_session_request(intent, session):
     """End the session with a message if the user wants to quit the app."""
-    
+    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
     reprompt_text = CONS_END_SESSION
     should_end_session = True
     speech_output = (CONS_END_SESSION)
