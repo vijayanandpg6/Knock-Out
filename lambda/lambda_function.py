@@ -26,6 +26,16 @@ CONST_Salli_Voice = '<voice name="Salli">'
 CONST_Voice_Start = '<voice>'
 CONST_Voice_End = '</voice>'
 
+#Sound effects
+CONST_BELLS_2 = "<audio src=\"soundbank://soundlibrary/sports/box/box_04\"/>"
+CONST_BELLS_5 = "<audio src=\"soundbank://soundlibrary/sports/box/box_08\"/>"
+CONST_PUNCHES_4 = "<audio src=\"soundbank://soundlibrary/sports/box/box_02\"/>"
+CONST_PUNCHES_MANY = "<audio src=\"soundbank://soundlibrary/sports/box/box_07\"/>"
+CONST_POINTS = "<audio src=\"soundbank://soundlibrary/alarms/beeps_and_bloops/bell_01\"/>"
+CONST_Gameshow_Outro = "<audio src=\"soundbank://soundlibrary/ui/gameshow/amzn_ui_sfx_gameshow_intro_01\"/>"
+CONST_Beeps = "<audio src=\"soundbank://soundlibrary/computers/beeps_tones/beeps_tones_08\"/>"
+CONST_BEEPS_2 = "<audio src=\"soundbank://soundlibrary/alarms/beeps_and_bloops/bell_05\"/>"
+
 # Alexa dialogues
 # 1. Introduction
 CONST_INTRO_1 = CONST_Beeps + "Welcome to " + CONST_Skill_name + ". " + "Boxing, is an unarmed combat sport, and has it's history as early as 1500 BC. "
@@ -39,6 +49,7 @@ CONST_INTRO_1 += "Tell me to start the session when you are ready. "
 
 
 # ------- Skill specific business logic -------
+
 
 def on_intent(intent_request, session):
     """Called when the user specifies an intent for this skill."""
@@ -59,7 +70,17 @@ def on_intent(intent_request, session):
     elif intent_name == "ShadowBoxingIntent":
         return handle_shadowboxingintent_request(intent, session)
     elif intent_name == "RepeatShadowBoxingIntent":
-		return handle_repeatshadowboxingintent_request(intent, session)
+        return handle_repeatshadowboxingintent_request(intent, session)
+    elif intent_name == "EndSessionIntent":
+        return handle_endsessionintent_request(intent, session)
+    elif intent_name == "AMAZON.HelpIntent":
+        return handle_get_help_request(intent, session)
+    elif intent_name == "AMAZON.StopIntent":
+        return handle_finish_session_request(intent, session)
+    elif intent_name == "AMAZON.CancelIntent":
+        return handle_finish_session_request(intent, session)
+    else:
+        raise ValueError("Invalid intent")
 
 # --------------- Functions that make Gameon API calls -------------
 
