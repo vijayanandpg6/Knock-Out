@@ -48,6 +48,26 @@ CONST_INTRO_1 += "Along your way, you will be awarded with points, and you can c
 CONST_INTRO_1 += "Tell me to start the session when you are ready. "
 
 
+# 2. Trainers
+CONST_Trainers = "Begining is always the hardest and you have done that already. Yay! Let me introduce you to both the trainers. "
+CONST_Trainers += CONST_Matthew_Voice + " Hi, I am Mike. " + CONST_Voice_End
+CONST_Trainers += CONST_Salli_Voice + " Hi, I am Laila. " + CONST_Voice_End
+CONST_Trainers += CONST_Voice_Start + " Which trainer would you like to choose. Trainer Mike, or Trainer Laila? " + CONST_Voice_End
+
+# 2. Trainers old
+CONST_TRAINERS_OLD1 = "Welcome back to your training session. Consistencey is the key. We have retrieved your progress from last saved. "
+CONST_TRAINERS_OLD2 = "Let me re introduce you to your trainers. "
+CONST_TRAINERS_OLD2 += CONST_Matthew_Voice + " Hi, I am Mike. " + CONST_Voice_End
+CONST_TRAINERS_OLD2 += CONST_Salli_Voice + " Hi, I am Laila. " + CONST_Voice_End
+CONST_TRAINERS_OLD2 += CONST_Voice_Start + " Which trainer would you like to choose for today's session. Trainer Mike, or Trainer Laila? " + CONST_Voice_End
+
+# 3. Choose trainer
+CONST_Choose_Trainer_99 = "Hello, I am your trainer "
+CONST_Choose_Trainer = "There are two ways you can start training. You can start by learning the basic punches, which I highly recommend. "
+CONST_Choose_Trainer += "Other is you can choose to shadow box using various combinations with varied difficulty. "
+CONST_Choose_Trainer += "Would you like to start with, The basics? or, Shadow boxing? "
+
+
 # ------- Skill specific business logic -------
 
 
@@ -85,12 +105,19 @@ def on_intent(intent_request, session):
 # --------------- Functions that make Gameon API calls -------------
 
 def registerPlayer(session):
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-    r = requests.post(url = CONST_URL+"players/register", data = data,headers=headers) 
-    responseData = r.json()
-    session["attributes"]["CONST_PLAYER_TOKEN"] =  responseData['playerToken']
-    session["attributes"]["CONST_EXTERNAL_PLAYER_ID"] = responseData['externalPlayerId']
-    return session["attributes"]["CONST_EXTERNAL_PLAYER_ID"]
+    data ={}
+    result = "Invalid playerName"
+    #result = leaderboardRank(session["attributes"]["CONST_PLAYER_NAME"])
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.post(url = CONST_URL+"players/register", data = data,headers=headers) 
+        responseData = r.json()
+        session["attributes"]["CONST_PLAYER_TOKEN"] =  responseData['playerToken']
+        session["attributes"]["CONST_EXTERNAL_PLAYER_ID"] = responseData['externalPlayerId']
+        return session["attributes"]["CONST_EXTERNAL_PLAYER_ID"]
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "register player {0}".format(err)
+        return "Exception: {0}".format(err)
     return "Player already registered"
 
 def authenticatePlayer(session):
