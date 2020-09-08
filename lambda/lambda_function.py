@@ -119,24 +119,39 @@ def registerPlayer(session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "register player {0}".format(err)
         return "Exception: {0}".format(err)
     return "Player already registered"
-
+	
 def authenticatePlayer(session):
     data ={}
-    json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-    r = requests.post(url = CONST_URL+"/players/auth", data = data,json = json,headers = headers) 
-    responseData = r.json()
-    session["attributes"]["CONST_SESSION_ID"] =  responseData['sessionId']
-    session["attributes"]["CONST_SESSION_EXPIRATION_DATE"] = responseData['sessionExpirationDate']
-    return session["attributes"]["CONST_SESSION_ID"]
+    try:
+        json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.post(url = CONST_URL+"/players/auth", data = data,json = json,headers = headers) 
+        responseData = r.json()
+        session["attributes"]["CONST_SESSION_ID"] =  responseData['sessionId']
+        session["attributes"]["CONST_SESSION_EXPIRATION_DATE"] = responseData['sessionExpirationDate']
+        return session["attributes"]["CONST_SESSION_ID"]
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "authenticate player {0}".format(err)
+        return "Exception: {0}".format(err)
 
 def leaderboardRank(playerName, session):
     data ={}
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-    r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
-    responseData = r.json()
-    leaderboardJson = responseData['leaderboard']
-	return "Invalid playerName"
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+        responseData = r.json()
+        leaderboardJson = responseData['leaderboard']
+        for player in leaderboardJson:
+            if playerName==player['playerName']:
+                session["attributes"]["CONST_EXTERNAL_PLAYER_ID"] =  player['externalPlayerId']
+                session["attributes"]["CONST_RANK"] = player['rank']
+                session["attributes"]["CONST_PLAYER_NAME"] = player['playerName']
+                session["attributes"]["CONST_SCORE"] = player['score']
+                return str(session["attributes"]["CONST_RANK"])
+        return "Invalid playerName"
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "leaderboard rank {0}".format(err)
+        return "Exception: {0}".format(err)
 
 def isNewPlayer(playerName, session):
     data ={}
