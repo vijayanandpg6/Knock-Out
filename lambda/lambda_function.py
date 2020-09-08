@@ -152,14 +152,37 @@ def leaderboardRank(playerName, session):
     except Exception as err:
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "leaderboard rank {0}".format(err)
         return "Exception: {0}".format(err)
-
+		
 def isNewPlayer(playerName, session):
     data ={}
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
-    r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"] }
+        r = requests.get(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/leaderboard", data = data,headers = headers)
+        responseData = r.json()
+        leaderboardJson = responseData['leaderboard']
+        for player in leaderboardJson:
+            if playerName==player['playerName']:
+                session["attributes"]["CONST_EXTERNAL_PLAYER_ID"] =  player['externalPlayerId']
+                session["attributes"]["CONST_RANK"] = player['rank']
+                session["attributes"]["CONST_PLAYER_NAME"] = player['playerName']
+                session["attributes"]["CONST_SCORE"] = player['score']
+                return str(session["attributes"]["CONST_EXTERNAL_PLAYER_ID"])
+        return "new"
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "is new player {0}".format(err)
+        return "new"
+
+
+def increaseScore(session):
+    enterMatch(session)
+    data ={}
+    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+    json ={	"score" : session["attributes"]["CONST_SCORE"]}
+    r = requests.put(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/score", data = data,json = json,headers = headers)
     responseData = r.json()
-    leaderboardJson = responseData['leaderboard']
-	return "new"
+    session["attributes"]["CONST_SCORE"] = responseData['score']
+    #session["attributes"]["CONST_MESSAGE"] = responseData['message']
+    return str(session["attributes"]["CONST_SCORE"])
 
 def handle_endsessionintent_request(intent, session):
     headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
