@@ -172,17 +172,52 @@ def isNewPlayer(playerName, session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "is new player {0}".format(err)
         return "new"
 
-
+		
 def increaseScore(session):
     enterMatch(session)
     data ={}
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
-    json ={	"score" : session["attributes"]["CONST_SCORE"]}
-    r = requests.put(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/score", data = data,json = json,headers = headers)
-    responseData = r.json()
-    session["attributes"]["CONST_SCORE"] = responseData['score']
-    #session["attributes"]["CONST_MESSAGE"] = responseData['message']
-    return str(session["attributes"]["CONST_SCORE"])
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+        json ={	"score" : session["attributes"]["CONST_SCORE"]}
+        r = requests.put(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/score", data = data,json = json,headers = headers)
+        responseData = r.json()
+        session["attributes"]["CONST_SCORE"] = responseData['score']
+        #session["attributes"]["CONST_MESSAGE"] = responseData['message']
+        return str(session["attributes"]["CONST_SCORE"])
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "increase score {0}".format(err)
+        return "Exception: {0}".format(err)
+
+def enterMatch(session):
+    data ={}
+    try:
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+        r = requests.post(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/enter", data = data,headers = headers) 
+        responseData = r.json()
+        #MATCH_ID = responseData['matchId']
+        #attemptsRemaining =  responseData['attemptsRemaining']
+        #session["attributes"]["CONST_TOURNAMENTID"] = responseData['tournamentId']
+        return session["attributes"]["CONST_TOURNAMENTID"]
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "enter match {0}".format(err)
+        return "Exception: {0}".format(err)
+
+		
+def enterPlayerTournament(session):
+    data ={}
+    try:
+        #json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
+        headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
+        r = requests.post(url = CONST_URL+"player-tournaments/"+session["attributes"]["CONST_TOURNAMENTID"]+"/enter", data = data, headers = headers) 
+        responseData = r.json()
+        #MATCH_ID = responseData['matchId']
+        #attemptsRemaining =  responseData['attemptsRemaining']
+        #session["attributes"]["CONST_TOURNAMENTID"] = responseData['tournamentId']
+        return session["attributes"]["CONST_TOURNAMENTID"]
+    except Exception as err:
+        session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "enter player tournament {0}".format(err)
+        return "Exception: {0}".format(err)
+
 
 def handle_endsessionintent_request(intent, session):
     headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
