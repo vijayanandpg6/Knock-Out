@@ -10,6 +10,8 @@ import time
 import random
 import hashlib
 
+# ------- Skill specific business logic -------
+
 CONST_Skill_name = "knock out"
 
 # Constants
@@ -47,7 +49,6 @@ CONST_INTRO_1 += "To customize your experience, we have 2 trainers, Mike, and La
 CONST_INTRO_1 += "Along your way, you will be awarded with points, and you can compete with others, who are training just like you. "
 CONST_INTRO_1 += "Tell me to start the session when you are ready. "
 
-
 # 2. Trainers
 CONST_Trainers = "Begining is always the hardest and you have done that already. Yay! Let me introduce you to both the trainers. "
 CONST_Trainers += CONST_Matthew_Voice + " Hi, I am Mike. " + CONST_Voice_End
@@ -67,9 +68,29 @@ CONST_Choose_Trainer = "There are two ways you can start training. You can start
 CONST_Choose_Trainer += "Other is you can choose to shadow box using various combinations with varied difficulty. "
 CONST_Choose_Trainer += "Would you like to start with, The basics? or, Shadow boxing? "
 
+# 3. Choose trainer old
+CONST_Choose_Trainer_OLD_99 = "Hello, I am your trainer "
+CONST_Choose_Trainer_OLD = "Since you are an existing user, you might have already known the basics. "
+CONST_Choose_Trainer_OLD += "You can practice the basics again, or you can choose to shadow box using various combinations with varied difficulty. "
+CONST_Choose_Trainer_OLD += "Would you like to start with, The basics? or Shadow boxing? "
 
-# ------- Skill specific business logic -------
+# 4. The Basics
+CONST_Basics = CONST_BELLS_2 + "Boxing is a sport which is easy to pick up but very hard to master. That said, modern boxing has 4 types of punches. "
+CONST_Basics += "Jab, Cross, Hook, Upper Cut. "
+CONST_Basics += "Start by standing in upright postion with a firm posture. Both of your fists clenched, directly in front of your face with your thumb pointing towards you. "
+CONST_Basics += "This will be your guard position, when you are not performing any of your punches. "
+CONST_Basics += "Number one, The Jab. A quick, straight punch with your right hand, or your lead hand, directing straight to the opponent's face. This punch does not generate much power, but it is your most important punch in boxing. Used for both defence and attack, helps you to guage your distance, and also to help you to cover against your opponent's punches. "
+CONST_Basics += "Number two, The Cross. Jab is quicker punch, but The Cross, is a powerful straight punch where you generate your power from your shoulders. For more additional power, you rotate your torso or hips counter clockwise and generate power for your punches. "
+CONST_Basics += "Remember after each punches you need to resume to your guard position unless, your doing a combination of punches. "
+CONST_Basics += "Number three, The Hook. A semi circular punch thrown with the lead hand to the side of the opponent's head. From the guard position, the elbow is drawn back with a horizontal fist, knuckles pointing forward and the elbow bent. The torso and hips are rotated clockwise, propelling the fist through a tight, clockwise arc across the front of the body and connecting with the target. "
+CONST_Basics += "Number four, The Upper Cut. This is a vertical punch with your rear hand. The rear hand drops below the level of the opponent's chest and the knees are bent slightly. From this position, the rear hand is thrust upwards in a rising arc towards the opponent's chin or torso. At the same time, the knees push upwards, the torso and hips rotate counter clockwise, and the rear heel turns outward, mimicking the body movement of the cross. "
+CONST_Basics += "Even though we gave you a descriptive of all the punches, we recommend we you check your stance and punches with a professional so that you do not do it wrong. "
+CONST_Basics += "That being said you have completed your basic training. You have gained five points for your training. " + CONST_BEEPS_2
+CONST_Basics2 = "Would you like to start with shadow boxing training?"
 
+# 5. Shadow boxing intro
+CONST_Shadow_Boxing = "Let us begin with shadow boxing combinations. You will have ten sets of combinations, and for completing the round you will gain ten points. "
+CONST_Shadow_Boxing += "Hope, you are ready. Now, let us begin. " + CONST_BELLS_2
 
 def on_intent(intent_request, session):
     """Called when the user specifies an intent for this skill."""
@@ -119,7 +140,7 @@ def registerPlayer(session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "register player {0}".format(err)
         return "Exception: {0}".format(err)
     return "Player already registered"
-	
+
 def authenticatePlayer(session):
     data ={}
     try:
@@ -152,7 +173,7 @@ def leaderboardRank(playerName, session):
     except Exception as err:
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "leaderboard rank {0}".format(err)
         return "Exception: {0}".format(err)
-		
+
 def isNewPlayer(playerName, session):
     data ={}
     try:
@@ -172,7 +193,6 @@ def isNewPlayer(playerName, session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "is new player {0}".format(err)
         return "new"
 
-		
 def increaseScore(session):
     enterMatch(session)
     data ={}
@@ -202,7 +222,6 @@ def enterMatch(session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "enter match {0}".format(err)
         return "Exception: {0}".format(err)
 
-		
 def enterPlayerTournament(session):
     data ={}
     try:
@@ -218,46 +237,6 @@ def enterPlayerTournament(session):
         session["attributes"]["LOG_ERRORS"] = session["attributes"]["LOG_ERRORS"] + "enter player tournament {0}".format(err)
         return "Exception: {0}".format(err)
 
-
-def handle_endsessionintent_request(intent, session):
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
-    json ={	"score" : session["attributes"]["CONST_SCORE"]}
-    r = requests.put(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/score", data = data,json = json,headers = headers)
-    responseData = r.json()
-    session["attributes"]["CONST_SCORE"] = responseData['score']
-    #session["attributes"]["CONST_MESSAGE"] = responseData['message']
-    return str(session["attributes"]["CONST_SCORE"])
-
-def handle_finish_session_request(intent, session):
-    """End the session with a message if the user wants to quit the app."""
-    attributes = {"LOG_ERRORS": session["attributes"]["LOG_ERRORS"] }
-    reprompt_text = CONS_END_SESSION
-    should_end_session = True
-    speech_output = (CONS_END_SESSION)
-    return build_response(
-        attributes,
-        build_speechlet_response_without_card(speech_output, reprompt_text, should_end_session)
-    )
-
-	
-def enterMatch(session):
-	data ={}
-	headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
-    r = requests.post(url = CONST_URL+"matches/"+session["attributes"]["CONST_MATCH_ID"]+"/enter", data = data,headers = headers) 
-    responseData = r.json()
-	#MATCH_ID = responseData['matchId']
-    #attemptsRemaining =  responseData['attemptsRemaining']
-    #session["attributes"]["CONST_TOURNAMENTID"] = responseData['tournamentId']
-	return session["attributes"]["CONST_TOURNAMENTID"]
-    data ={}
-    
-def enterPlayerTournament(session):
-    data ={}
-	#json ={	"playerToken" : session["attributes"]["CONST_PLAYER_TOKEN"],	"playerName"  : session["attributes"]["CONST_PLAYER_NAME"], "deviceOSType": "iOS",	"appBuildType": "development"}
-    headers = {'content-type': 'application/json', 'x-api-key': session["attributes"]["CONST_API_KEY"], 'Session-Id' : session["attributes"]["CONST_SESSION_ID"] }
-    r = requests.post(url = CONST_URL+"player-tournaments/"+session["attributes"]["CONST_TOURNAMENTID"]+"/enter", data = data, headers = headers) 
-    responseData = r.json()
-	return session["attributes"]["CONST_TOURNAMENTID"]
 
 
 # --------------- Functions that control the skill's behavior -------------
