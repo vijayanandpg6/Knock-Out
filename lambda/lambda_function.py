@@ -92,6 +92,23 @@ CONST_Basics2 = "Would you like to start with shadow boxing training?"
 CONST_Shadow_Boxing = "Let us begin with shadow boxing combinations. You will have ten sets of combinations, and for completing the round you will gain ten points. "
 CONST_Shadow_Boxing += "Hope, you are ready. Now, let us begin. " + CONST_BELLS_2
 
+# 6. Shadow boxing end
+CONST_Shadow_Boxing_End = "You have completed your shadow boxing round. You have gained ten points for your training." + CONST_BEEPS_2
+CONST_Shadow_Boxing_End2 = "It is important to have adequate rest when you become tired, inorder to train better. Would you like to continue with your training, or end the session? "
+
+# 5. Shadow boxing intro old
+CONST_Shadow_Boxing_OLD = "Let us continue with our next round of shadow boxing combinations. In this round, you will have ten sets of combinations, and for completing the round you will gain ten points. "
+CONST_Shadow_Boxing_OLD += "Hope, you are ready to start this round. Now, let us begin. " + CONST_BELLS_2
+
+# 6. Shadow boxing end old
+CONST_Shadow_Boxing_OLD_End = "You have completed your shadow boxing round. You have gained ten points for your training." + CONST_BEEPS_2
+CONST_Shadow_Boxing_OLD_End2 = "It is important to have adequate rest when you become tired, inorder to train better. Would you like to continue with your training, or end the session? "
+
+# 7. End session
+CONS_END_SESSION = "We have saved your progress and hope to see you for your next session. Thank you for using knock out. Have a Great Day. "
+
+# Make sure you use question marks or periods.
+
 def on_intent(intent_request, session):
     """Called when the user specifies an intent for this skill."""
     print("on_intent requestId=" + intent_request['requestId'] +
@@ -240,6 +257,8 @@ def enterPlayerTournament(session):
 
 
 # --------------- Functions that control the skill's behavior -------------
+
+# --------------- Functions that control the skill's behavior -------------
 def boxing_intro(session):
     """If we wanted to initialize the session to have some attributes we could add those here."""
     intro = ( CONST_INTRO_1 )
@@ -247,10 +266,32 @@ def boxing_intro(session):
     hash_obj = hashlib.sha1( bytes(main_user_id, 'utf-8'))
     #user_id = str(main_user_id[19:39] + main_user_id[65:85] + main_user_id[200:])
     #user_id = str(main_user_id[200:])
+    user_id = str(hash_obj.hexdigest())
+    should_end_session = False
+    speech_output = intro 
+    reprompt_text = intro
+    attributes = {"speech_output": speech_output,
+                  "reprompt_text": speech_output,
+                  "CONST_API_KEY": "",
+                  "CONST_MATCH_ID": "",
+                  "CONST_PLAYER_TOKEN": "",
+                  "CONST_EXTERNAL_PLAYER_ID": "",
+                  "CONST_SESSION_EXPIRATION_DATE": "",
+                  "CONST_SESSION_ID": "xx",
+                  "CONST_SESSION_EXPIRATION_DATE": "",
+                  "CONST_SCORE": 0,
+                  "CONST_PLAYER_SCORE": 0,
+                  "CONST_RANK": 0,
+                  "CONST_PLAYER_NAME": user_id,
+                  "CONST_MESSAGE": "",
+                  "CONST_TRAINER": "Mike",
+                  "CONST_IS_NEW": "true",
+                  "CONST_TOURNAMENTID": "",
+                  "LOG_ERRORS": ""
+                  }
 
     return build_response(attributes, build_speechlet_response(
         CONST_Skill_name, speech_output, reprompt_text, should_end_session))
-
 
 def handle_startsessionintent_request(intent, session):
     main_user_id = str(session['user']['userId'])
