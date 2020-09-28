@@ -337,9 +337,15 @@ def handle_startsessionintent_request(intent, session):
     user_gave_up = intent['name']
     reprompt_text = "Tell me to start the session when you are ready. "
     speech_output=(CONST_Trainers)
+    if(is_new == "true"):
+        speech_output=(CONST_Trainers)
+    else:
+        leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
+        score_update = "You have " + str(session["attributes"]["CONST_SCORE"]) + " points from your previous sessions and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
+        speech_output=(CONST_TRAINERS_OLD1 + score_update + CONST_TRAINERS_OLD2)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
-
+	
 def handle_choosetrainerintent_request(intent, session):
     trainer_name = str(intent["slots"]["TrainerName"]["value"])
     session["attributes"]["CONST_TRAINER"] = trainer_name
@@ -368,9 +374,13 @@ def handle_choosetrainerintent_request(intent, session):
             speech_output=(CONST_Matthew_Voice + CONST_Choose_Trainer_99 + trainer_name + ". " + CONST_Choose_Trainer + CONST_Voice_End)
         else:
             speech_output=(CONST_Salli_Voice + CONST_Choose_Trainer_99 + trainer_name + ". " + CONST_Choose_Trainer + CONST_Voice_End)
+    else:
+        if(trainer_name.lower() == "mike"):
+            speech_output=(CONST_Matthew_Voice + CONST_Choose_Trainer_OLD_99 + trainer_name + ". " + CONST_Choose_Trainer_OLD + CONST_Voice_End) 
+        else:
+            speech_output=(CONST_Salli_Voice + CONST_Choose_Trainer_OLD_99 + trainer_name + ". " + CONST_Choose_Trainer_OLD + CONST_Voice_End) 
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
-	
 def handle_basicsintent_request(intent, session):
     attributes = {"CONST_API_KEY": session["attributes"]["CONST_API_KEY"],
                   "CONST_MATCH_ID": session["attributes"]["CONST_MATCH_ID"],
@@ -378,13 +388,28 @@ def handle_basicsintent_request(intent, session):
                   "CONST_EXTERNAL_PLAYER_ID": session["attributes"]["CONST_EXTERNAL_PLAYER_ID"],
                   "CONST_SESSION_ID": session["attributes"]["CONST_SESSION_ID"],
                   "CONST_SESSION_EXPIRATION_DATE": session["attributes"]["CONST_SESSION_EXPIRATION_DATE"],
-                  
+                  "CONST_SCORE": session["attributes"]["CONST_SCORE"],
+                  "CONST_PLAYER_SCORE": session["attributes"]["CONST_PLAYER_SCORE"],
+                  "CONST_RANK": session["attributes"]["CONST_RANK"],
+                  "CONST_PLAYER_NAME": session["attributes"]["CONST_PLAYER_NAME"],
+                  "CONST_MESSAGE": session["attributes"]["CONST_MESSAGE"],
+                  "CONST_TRAINER": session["attributes"]["CONST_TRAINER"],
+                  "CONST_IS_NEW": session["attributes"]["CONST_IS_NEW"],
+                  "CONST_TOURNAMENTID": session["attributes"]["CONST_TOURNAMENTID"],
+                  "LOG_ERRORS": session["attributes"]["LOG_ERRORS"]
                   }
     should_end_session = False
     user_gave_up = intent['name']
     reprompt_text = "you have completed your basic training. "
     session["attributes"]["CONST_SCORE"] = (int(session["attributes"]["CONST_SCORE"]) + 5)
-    
+    increaseScore(session)
+    leaderboardRank(str(session["attributes"]["CONST_PLAYER_NAME"]), session)
+    score_update = "Your total points are " + str(session["attributes"]["CONST_SCORE"]) + ", and you are ranked currently at number " + str(session["attributes"]["CONST_RANK"]) + ". "
+    trainer_name = str(session["attributes"]["CONST_TRAINER"])
+    if(trainer_name.lower() == "mike"):
+        speech_output=(CONST_Matthew_Voice + CONST_Basics + score_update + CONST_Basics2 + CONST_Voice_End)
+    else:
+        speech_output=(CONST_Salli_Voice + CONST_Basics + score_update + CONST_Basics2 + CONST_Voice_End)
     return build_response(attributes,build_speechlet_response(CONST_Skill_name, speech_output, reprompt_text, should_end_session))
 
 	
